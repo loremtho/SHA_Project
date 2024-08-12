@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generator</title>
+</head>
+<body>
+    <h1>Generate an Image with Stable Diffusion</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <label for="prompt">Enter your prompt:</label>
+        <input type="text" id="prompt" name="prompt" required>
+        <button type="submit">Generate Image</button>
+    </form>
+
+    {% if prompt %}
+        <h2>Generated Image for: "{{ prompt }}"</h2>
+        <img src="/media/generated_image.png" alt="Generated Image">
+    {% endif %}
+</body>
+</html>
