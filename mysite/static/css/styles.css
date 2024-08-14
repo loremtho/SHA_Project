@@ -1,66 +1,102 @@
 /* 전체 배경 및 본문 스타일 */
 body {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    height: 100vh; /* 전체 화면 높이로 설정 */
+    justify-content: center;
+    height: 100vh;
     margin: 0;
     font-family: 'Pretendard Medium', sans-serif;
-    background-color: #ac9f9f; /* 배경 색상 */
+    background-color: #f0f2f5; /* 밝은 회색 배경 */
 }
 
 /* 내용 컨테이너 스타일 */
 .container {
-    background: #ffffff; /* 컨테이너 배경 색상 */
-    border-radius: 10px; /* 둥근 모서리 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 컨테이너 그림자 효과 */
-    padding: 20px; /* 내부 여백 */
-    max-width: 600px; /* 최대 너비 */
-    width: 100%; /* 너비 100% */
-    text-align: center; /* 내용 중앙 정렬 */
-    margin-top: 20px; /* 상단 여백 */
-}
-
-/* 폼 스타일 */
-form {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 800px;
+    width: 100%;
     text-align: center;
 }
 
 /* 버튼 스타일 */
-button {
+.style-button {
     font-family: 'Pretendard Light', sans-serif;
-    background: linear-gradient(45deg, #4c74af, #272599); /* 그라데이션 배경 */
-    color: white; /* 텍스트 색상 */
-    border: none; /* 기본 테두리 제거 */
-    border-radius: 4px; /* 둥근 모서리 */
-    padding: 5px 10px; /* 패딩 */
-    font-size: 16px; /* 글자 크기 */
-    font-weight: medium; /* 글자 굵기 */
-    cursor: pointer; /* 마우스 포인터 모양 */
-    transition: background 0.3s, transform 0.3s; /* 부드러운 배경 색상 전환과 변형 효과 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    background: linear-gradient(45deg, #4c74af, #272599);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    margin: 0 5px;
 }
 
-button:hover {
-    background: linear-gradient(45deg, #3e758e, #1c416c); /* 호버 시 배경 색상 변경 */
-    transform: scale(1.05); /* 호버 시 크기 확대 */
+.style-button:hover {
+    background: linear-gradient(45deg, #3e758e, #1c416c);
+    transform: scale(1.05);
 }
 
-button:active {
-    background: linear-gradient(45deg, #2e348b, #3d1b9b); /* 클릭 시 배경 색상 변경 */
-    transform: scale(0.95); /* 클릭 시 크기 축소 */
+.style-button:active {
+    background: linear-gradient(45deg, #2e348b, #3d1b9b);
+    transform: scale(0.95);
 }
 
-/* 버튼 컨테이너 스타일 */
-.button-container {
-    margin-bottom: 20px; /* 버튼과 폼 사이의 간격 조정 */
+/* 폼 스타일 */
+.prompt-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.form-group {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.generate-button {
+    font-family: 'Pretendard Light', sans-serif;
+    background: linear-gradient(45deg, #4c74af, #272599);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.generate-button:hover {
+    background: linear-gradient(45deg, #3e758e, #1c416c);
+    transform: scale(1.05);
+}
+
+.generate-button:active {
+    background: linear-gradient(45deg, #2e348b, #3d1b9b);
+    transform: scale(0.95);
 }
 
 /* 이미지 스타일 */
+.image-container {
+    margin-top: 20px;
+}
+
 img {
     max-width: 100%;
     height: auto;
-    display: block;
-    margin-top: 10px; /* 이미지와 위 요소 사이의 간격 조정 */
+    border-radius: 8px;
 }
