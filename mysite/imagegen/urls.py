@@ -1,9 +1,7 @@
+# imagegen/urls.py
 from django.urls import path
-from . import views
-from django.conf import settings
-from django.conf.urls.static import static
+from .views import image_generate_view
 
 urlpatterns = [
-    path('', views.generate_image, name='generate_image'),
+    path('', image_generate_view, name='generate'),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>간스웹</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Stable Diffusion 이미지 생성기</h1>
+
+    <div class="button-container">
+        <button type="button">실사풍</button>
+        <button type="button">애니풍</button>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <label for="prompt">프롬프트를 입력하세요 (Korean):</label>
+        <input type="text" id="prompt" name="prompt" required>
+        <br><br>
+        <label for="negative_prompt">부정 프롬프트를 입력하세요 (optional, Korean):</label>
+        <input type="text" id="negative_prompt" name="negative_prompt">
+        <br><br>
+        <button type="submit">생성</button>
+    </form>
+
+    {% if image_url %}
+        <h2>생성된 이미지:</h2>
+        <img src="{{ MEDIA_URL }}{{ image_url }}" alt="Generated Image">
+    {% endif %}
+</body>
+</html>

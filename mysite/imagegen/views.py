@@ -1,17 +1,31 @@
 from django.shortcuts import render
-from diffusers import StableDiffusionPipeline
-import torch
+from django.http import HttpResponse
+from .geminiAPI import translate_to_english, transform_to_stable_diffusion_prompt
+from .connectStable import createIMG
+import os
 
-# Stable Diffusion 모델 로드
-pipe = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5")
-pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")
-
-def generate_image(request):
+def image_generate_view(request):
+    image_url = None
     if request.method == "POST":
         prompt = request.POST.get("prompt")
-        if prompt:
-            # 이미지 생성
-            image = pipe(prompt).images[0]
-            image.save("media/generated_image.png")  # 이미지를 파일로 저장
+        negative_prompt = request.POST.get("negative_prompt", "")
 
-    return render(request, "imagegen/generate_image.html")
+        # 한글 설명을 영어로 번역
+        english_text = translate_to_english(prompt)
+        if negative_prompt:
+            negative_english_text = translate_to_english(negative_prompt)
+        else:
+            negative_english_text = None
+
+        # Stable Diffusion 프롬프트로 변환
+        prompt_text= transform_to_stable_diffusion_prompt(english_text, negative_english_text)
+
+        # 이미지 생성
+        createIMG(prompt_text)
+
+        # 이미지 경로 설정
+        image_folder = 'media/picture/'
+        image_filename = sorted(os.listdir(image_folder))[-1]  # 가장 최근 생성된 이미지 선택
+        image_url = os.path.join(image_folder, image_filename)
+
+    return render(request, 'imagegen/generate.html', {"image_url": image_url})
