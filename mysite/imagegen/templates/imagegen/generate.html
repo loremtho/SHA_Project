@@ -11,13 +11,17 @@
         <h1>Stable Diffusion 이미지 생성기</h1>
 
         <div class="button-container">
-            <button type="button" class="style-button">실사풍</button>
-            <button type="button" class="style-button">애니풍</button>
-            <button type="button" class="style-button">도트풍</button>
+            <button type="button" class="style-button" onclick="setStyle('realism')">실사풍</button>
+            <button type="button" class="style-button" onclick="setStyle('anime')">애니풍</button>
+            <button type="button" class="style-button" onclick="setStyle('pixel')">도트풍</button>
         </div>
         
-        <form method="post" class="prompt-form">
+        <form method="post" class="prompt-form" onsubmit="applyStyleSettings()">
             {% csrf_token %}
+            <input type="hidden" id="model_id" name="model_id">
+            <input type="hidden" id="num_inference_steps" name="num_inference_steps">
+            <input type="hidden" id="guidance_scale" name="guidance_scale">
+            
             <div class="form-group">
                 <label for="prompt">프롬프트를 입력하세요 (Korean):</label>
                 <input type="text" id="prompt" name="prompt" required>
@@ -36,5 +40,37 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+        function setStyle(style) {
+            let modelId, numSteps, scale;
+
+            if (style === 'realism') {
+                modelId = "stabilityai/stable-diffusion-3-medium-diffusers";
+                numSteps = 10;
+                scale = 7;
+            } else if (style === 'anime') {
+                modelId = "Niggendar/duchaitenPonyXLNo_v35";
+                numSteps = 30;
+                scale = 8;
+            } else if (style === 'pixel') {
+                modelId = "pixel-model-id";
+                numSteps = 75;
+                scale = 5;
+            }
+
+            // 스타일 설정을 로컬 스토리지에 저장
+            localStorage.setItem('model_id', modelId);
+            localStorage.setItem('num_inference_steps', numSteps);
+            localStorage.setItem('guidance_scale', scale);
+        }
+
+        function applyStyleSettings() {
+            // 로컬 스토리지에서 값을 가져와서 폼의 hidden input 필드에 설정
+            document.getElementById('model_id').value = localStorage.getItem('model_id');
+            document.getElementById('num_inference_steps').value = localStorage.getItem('num_inference_steps');
+            document.getElementById('guidance_scale').value = localStorage.getItem('guidance_scale');
+        }
+    </script>
 </body>
 </html>
