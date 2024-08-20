@@ -21,6 +21,8 @@
             <input type="hidden" id="model_id" name="model_id">
             <input type="hidden" id="num_inference_steps" name="num_inference_steps">
             <input type="hidden" id="guidance_scale" name="guidance_scale">
+            <input type="hidden" id="neg_text" name="neg_text">
+            <input type="hidden" id="pos_text" name="pos_text">
             
             <div class="form-group">
                 <label for="prompt">프롬프트를 입력하세요 (Korean):</label>
@@ -43,37 +45,43 @@
 
     <script>
         function setStyle(style) {
-            let modelId, numSteps, scale, neg_text;
-
+            let modelId, numSteps, scale, neg_text, pos_text;
+    
             if (style === 'realism') {
-                modelId = "stabilityai/stable-diffusion-xl-base-1.0";
+                modelId = "SG161222/Realistic_Vision_V6.0_B1_noVAE";
                 numSteps = 20;
                 scale = 7;
-                neg_text = "bad anatomy, missing fingers, worst quality, low quality, blurry"
+                neg_text = "(deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime), text, cropped, out of frame, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck";
+                pos_text = "masterpiece, best quality, photo-realistic, realistic, highly detailed, natural lighting, cinematic";  // 필요한 경우 설정
             } else if (style === 'anime') {
                 modelId = "eienmojiki/Anything-XL";
                 numSteps = 20;
                 scale = 7;
-                neg_text = "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name"
+                neg_text = "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, ugly";
+                pos_text = "masterpiece, best quality, newest";
             } else if (style === 'pixel') {
                 modelId = "pixel-model-id";
                 numSteps = 75;
                 scale = 5;
+                neg_text = "";  // 필요한 경우 설정
+                pos_text = "";  // 필요한 경우 설정
             }
-
+    
             // 스타일 설정을 로컬 스토리지에 저장
             localStorage.setItem('model_id', modelId);
             localStorage.setItem('num_inference_steps', numSteps);
             localStorage.setItem('guidance_scale', scale);
-            localStorage.setItem('neg_text', scale);
+            localStorage.setItem('neg_text', neg_text);
+            localStorage.setItem('pos_text', pos_text);
         }
-
+    
         function applyStyleSettings() {
             // 로컬 스토리지에서 값을 가져와서 폼의 hidden input 필드에 설정
             document.getElementById('model_id').value = localStorage.getItem('model_id');
             document.getElementById('num_inference_steps').value = localStorage.getItem('num_inference_steps');
             document.getElementById('guidance_scale').value = localStorage.getItem('guidance_scale');
             document.getElementById('neg_text').value = localStorage.getItem('neg_text');
+            document.getElementById('pos_text').value = localStorage.getItem('pos_text');
         }
     </script>
 </body>
