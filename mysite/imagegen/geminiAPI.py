@@ -41,5 +41,5 @@ def transform_to_stable_diffusion_prompt(english_text, negative_text=None):
     if negative_prompt:
         formatted_prompt += f"\n### Negative Prompt:\n{negative_prompt}\n"
 
-    print(positive_prompt)
+    print('포맷된 프롬프트' + formatted_prompt)
     return formatted_prompt

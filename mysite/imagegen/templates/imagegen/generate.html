@@ -43,16 +43,17 @@
 
     <script>
         function setStyle(style) {
-            let modelId, numSteps, scale;
+            let modelId, numSteps, scale, neg_text;
 
             if (style === 'realism') {
                 modelId = "stabilityai/stable-diffusion-3-medium-diffusers";
                 numSteps = 10;
                 scale = 7;
             } else if (style === 'anime') {
-                modelId = "Niggendar/duchaitenPonyXLNo_v35";
-                numSteps = 30;
-                scale = 8;
+                modelId = "eienmojiki/Anything-XL";
+                numSteps = 20;
+                scale = 7;
+                neg_text = "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name"
             } else if (style === 'pixel') {
                 modelId = "pixel-model-id";
                 numSteps = 75;
@@ -63,6 +64,7 @@
             localStorage.setItem('model_id', modelId);
             localStorage.setItem('num_inference_steps', numSteps);
             localStorage.setItem('guidance_scale', scale);
+            localStorage.setItem('neg_text', scale);
         }
 
         function applyStyleSettings() {
@@ -70,6 +72,7 @@
             document.getElementById('model_id').value = localStorage.getItem('model_id');
             document.getElementById('num_inference_steps').value = localStorage.getItem('num_inference_steps');
             document.getElementById('guidance_scale').value = localStorage.getItem('guidance_scale');
+            document.getElementById('neg_text').value = localStorage.getItem('neg_text');
         }
     </script>
 </body>
