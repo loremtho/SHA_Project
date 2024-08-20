@@ -46,9 +46,10 @@
             let modelId, numSteps, scale, neg_text;
 
             if (style === 'realism') {
-                modelId = "stabilityai/stable-diffusion-3-medium-diffusers";
-                numSteps = 10;
+                modelId = "stabilityai/stable-diffusion-xl-base-1.0";
+                numSteps = 20;
                 scale = 7;
+                neg_text = "bad anatomy, missing fingers, worst quality, low quality, blurry"
             } else if (style === 'anime') {
                 modelId = "eienmojiki/Anything-XL";
                 numSteps = 20;

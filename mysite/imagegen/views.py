@@ -22,9 +22,9 @@ def image_generate_view(request):
             # 만약 모델 별 전용 부정 프롬프트가 있다면
             if neg_text:
                 # 부정 프롬프트에 추가해줌
-                negative_english_text += neg_text
+                negative_english_text = translate_to_english(negative_prompt + neg_text)
         else:
-            negative_english_text = None
+            negative_english_text = neg_text
 
         # Stable Diffusion 프롬프트로 변환
         prompt_text= transform_to_stable_diffusion_prompt(english_text, negative_english_text)
