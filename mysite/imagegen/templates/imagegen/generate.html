@@ -51,14 +51,14 @@
                 modelId = "SG161222/Realistic_Vision_V6.0_B1_noVAE";
                 numSteps = 20;
                 scale = 7;
-                neg_text = "(deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime), text, cropped, out of frame, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck";
+                neg_text = "deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, text, cropped, out of frame, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck";
                 pos_text = "masterpiece, best quality, photo-realistic, realistic, highly detailed, natural lighting, cinematic";  // 필요한 경우 설정
             } else if (style === 'anime') {
                 modelId = "eienmojiki/Anything-XL";
                 numSteps = 20;
                 scale = 7;
-                neg_text = "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, ugly";
-                pos_text = "masterpiece, best quality, newest";
+                neg_text = "(worst quality, low quality:1.4), lowres, bad anatomy, bad hands, mutation, text, error,negative_hand Negative Embedding,verybadimagenegative_v1.3, missing fingers, extra digit, fewer digits, cropped, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (ugly:2.8)";
+                pos_text = "masterpiece, best quality, newest, safe";
             } else if (style === 'pixel') {
                 modelId = "pixel-model-id";
                 numSteps = 75;

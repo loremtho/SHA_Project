@@ -27,16 +27,13 @@ def createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_sc
     pipe.enable_model_cpu_offload()
     
     pipe.enable_xformers_memory_efficient_attention()
-    
-    print(str(pos_prompt))
-    print(str(neg_prompt))
 
     # 이미지 생성
     image = pipe(prompt=pos_prompt,
                 negative_prompt=neg_prompt, 
                 num_inference_steps=num_inference_steps, 
                 guidance_scale=guidance_scale,
-                height=512,
+                height=768,
                 width=512).images[0]
     
 
@@ -52,5 +49,7 @@ def createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_sc
     print('model id = ' + model_id)
     print('num_inference_steps = ' + str(num_inference_steps))
     print('guidance_scale = ' + str(guidance_scale))
+    print(image_path)
+    print(f'media/picture/{image_filename}')
     return f'media/picture/{image_filename}'  # 저장된 이미지의 경로
     
