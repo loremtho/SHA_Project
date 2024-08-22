@@ -55,7 +55,7 @@ def image_generate_view(request):
 
     return render(request, 'imagegen/generate3.html')
 
-# 로그인 뷰
+# 로그인 뷰 dsadasasdas
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
