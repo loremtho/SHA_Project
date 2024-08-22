@@ -10,7 +10,7 @@ import os
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '0000',
+    'password': '1234',
     'database': 'my_database'
 }
 
