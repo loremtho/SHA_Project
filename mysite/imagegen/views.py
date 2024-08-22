@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import login, logout
 from django.contrib import messages
-from django.http import HttpResponse
 import mysql.connector
 from .geminiAPI import translate_to_english, transform_to_stable_diffusion_prompt
 from .connectStable import createIMG
@@ -60,16 +58,33 @@ def image_generate_view(request):
 # 로그인 뷰
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('generate')  # 로그인 후 리디렉션할 URL
-        else:
-            messages.error(request, '로그인 정보를 확인해 주세요.')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'imagegen/login.html', {'form': form})
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # 데이터베이스 연결
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        try:
+            # 쿼리 작성
+            query = "SELECT * FROM users WHERE username = %s AND password = %s"
+            values = (username, password)
+            cursor.execute(query, values)
+            user = cursor.fetchone()
+
+            if user:
+                # 로그인 처리
+                request.session['user_id'] = user[0]  # 예: user_id를 세션에 저장
+                request.session['username'] = username
+                return redirect('generate')  # 로그인 후 리디렉션할 URL
+            else:
+                messages.error(request, '사용자 이름이나 비밀번호가 잘못되었습니다.')
+        except mysql.connector.Error as err:
+            messages.error(request, f"오류 발생: {err}")
+        finally:
+            cursor.close()
+            conn.close()
+    return render(request, 'imagegen/login.html')
 
 # 회원 가입 뷰
 def signup_view(request):
@@ -97,3 +112,8 @@ def signup_view(request):
             cursor.close()
             conn.close()
     return render(request, 'imagegen/signup.html')
+
+# 로그아웃 뷰
+def logout_view(request):
+    request.session.flush()  # 세션 초기화
+    return redirect('generate')  # 로그아웃 후 리디렉션할 URL
