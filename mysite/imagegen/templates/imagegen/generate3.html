@@ -20,8 +20,9 @@
                 <div class="nav-item"><a href="#">기능</a></div>
             </div>
             <div class="nav-buttons">
-                <button class="btn">로그인</button>
-                <button class="btn">회원가입</button>
+                <!-- 로그인 및 회원 가입 버튼에 링크 추가 -->
+                <a href="{% url 'login' %}" class="btn">로그인</a>
+                <a href="{% url 'signup' %}" class="btn">회원가입</a>
             </div>
         </div>
     </nav>
