@@ -3,9 +3,18 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
 from django.http import HttpResponse
+import mysql.connector
 from .geminiAPI import translate_to_english, transform_to_stable_diffusion_prompt
 from .connectStable import createIMG
 import os
+
+# MySQL 데이터베이스 설정
+db_config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': '0000',
+    'database': 'my_database'
+}
 
 # 이미지 생성 뷰
 def image_generate_view(request):
@@ -65,12 +74,26 @@ def login_view(request):
 # 회원 가입 뷰
 def signup_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # 데이터베이스 연결
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # 쿼리 작성
+        query = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
+        values = (username, email, password)
+
+        try:
+            cursor.execute(query, values)
+            conn.commit()
             messages.success(request, '회원 가입이 완료되었습니다. 로그인 해 주세요.')
             return redirect('login')
-    else:
-        form = UserCreationForm()
-    return render(request, 'imagegen/signup.html', {'form': form})
-
+        except mysql.connector.Error as err:
+            messages.error(request, f"오류 발생: {err}")
+        finally:
+            cursor.close()
+            conn.close()
+    return render(request, 'imagegen/signup.html')
