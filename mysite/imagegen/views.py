@@ -49,7 +49,7 @@ def image_generate_view(request):
         print("부정 프롬프트: " + str(neg_prompt))
 
         # 이미지 생성
-        image_url = createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale)
+        image_url = createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale, is_logged_in, logged_in_user)
 
         # 이미지 경로 설정
         image_folder = 'media/picture/'
@@ -90,8 +90,23 @@ def login_view(request):
                 # 로그인 성공 시 전역 변수 수정
                 is_logged_in = True
                 logged_in_user = user
-                print(logged_in_user)
-                return redirect('generate')  # 로그인 후 generate 화면으로 리디렉션
+                # print(logged_in_user)
+                
+                 # 로그인 후 이미지 목록 가져오기
+                query = "SELECT imgname, uploaded_at FROM images WHERE user_id = %s ORDER BY uploaded_at DESC"
+                values = (logged_in_user,)
+                cursor.execute(query, values)
+                images = cursor.fetchall()
+
+                cursor.close()
+                conn.close()
+
+                return render(request, 'imagegen/generate3.html', {
+                    'images': images,
+                    'is_logged_in': is_logged_in,
+                    'logged_in_user': logged_in_user
+                })
+                # return redirect('generate')  # 로그인 후 generate 화면으로 리디렉션
             else:
                 messages.error(request, '사용자 이름이나 비밀번호가 잘못되었습니다.')
         except mysql.connector.Error as err:
@@ -135,3 +150,23 @@ def logout_view(request):
     is_logged_in = False
     logged_in_user = None
     return redirect('generate')  # 로그아웃 후 generate 화면으로 리디렉션
+
+#히스토리 표시
+def image_gallery_view(request):
+    # 사용자 이미지 가져오기
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+    
+    query = "SELECT imgname FROM images WHERE user_id = %s ORDER BY uploaded_at DESC"
+    values = (logged_in_user,)
+    cursor.execute(query, values)
+    images = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    return render(request, 'imagegen/gallery.html', {
+        'images': images,
+        'is_logged_in': is_logged_in,
+        'logged_in_user': logged_in_user
+    })
