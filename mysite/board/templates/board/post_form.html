@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 작성</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/board.css' %}">
+</head>
+<body>
+    <nav>
+        <a href="{% url 'post_list' %}">게시판</a>
+        <a href="{% url 'post_create' %}">게시글 작성</a>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>게시글 작성</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">작성 완료</button>
+        </form>
+    </div>
+</body>
+</html>
