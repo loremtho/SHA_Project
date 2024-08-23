@@ -211,3 +211,7 @@ h1 {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.navbar-text {
+    color: white; /* 텍스트 색상을 흰색으로 설정 */
+}

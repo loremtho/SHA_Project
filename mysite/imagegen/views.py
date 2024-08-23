@@ -8,18 +8,19 @@ import os
 # 전역 변수
 is_logged_in = False
 logged_in_user = None
+logged_in_username = None  # 새로 추가된 전역 변수
 
 # MySQL 데이터베이스 설정
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '1234',
+    'password': '0000',
     'database': 'my_database'
 }
 
 # 이미지 생성 뷰
 def image_generate_view(request):
-    global is_logged_in, logged_in_user  # 전역 변수 사용 선언
+    global is_logged_in, logged_in_user, logged_in_username  # 전역 변수 사용 선언
     
     image_url = None
     if request.method == "POST":
@@ -59,17 +60,19 @@ def image_generate_view(request):
         return render(request, 'imagegen/generate3.html', {
             'image_url': image_url,
             'is_logged_in': is_logged_in,
-            'logged_in_user': logged_in_user
+            'logged_in_user': logged_in_user,
+            'logged_in_username': logged_in_username
         })
 
     return render(request, 'imagegen/generate3.html', {
         'is_logged_in': is_logged_in,
-        'logged_in_user': logged_in_user
+        'logged_in_user': logged_in_user,
+        'logged_in_username': logged_in_username
     })
 
 # 로그인 뷰
 def login_view(request):
-    global is_logged_in, logged_in_user  # 전역 변수 사용 선언
+    global is_logged_in, logged_in_user, logged_in_username  # 전역 변수 사용 선언
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -81,16 +84,17 @@ def login_view(request):
 
         try:
             # 쿼리 작성
-            query = "SELECT id FROM users WHERE username = %s AND password = %s"
+            query = "SELECT id, username FROM users WHERE username = %s AND password = %s"
             values = (username, password)
             cursor.execute(query, values)
-            user = cursor.fetchone()[0]
-
+            user = cursor.fetchone()
+            
             if user:
                 # 로그인 성공 시 전역 변수 수정
                 is_logged_in = True
-                logged_in_user = user
-                print(logged_in_user)
+                logged_in_user = user[0]  # user[0]이 user_id
+                logged_in_username = user[1]  # user[1]이 username
+                print(logged_in_username)
                 return redirect('generate')  # 로그인 후 generate 화면으로 리디렉션
             else:
                 messages.error(request, '사용자 이름이나 비밀번호가 잘못되었습니다.')
@@ -130,8 +134,9 @@ def signup_view(request):
 
 # 로그아웃 뷰
 def logout_view(request):
-    global is_logged_in, logged_in_user  # 전역 변수 사용 선언
+    global is_logged_in, logged_in_user, logged_in_username  # 전역 변수 사용 선언
 
     is_logged_in = False
     logged_in_user = None
+    logged_in_username = None
     return redirect('generate')  # 로그아웃 후 generate 화면으로 리디렉션
