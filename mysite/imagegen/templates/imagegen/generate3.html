@@ -21,7 +21,8 @@
             </div>
             <div class="nav-buttons">
                 {% if is_logged_in %}
-                    <span class="navbar-text">안녕하세요, {{ logged_in_username }}</span>
+                <span class="navbar-text" style="color: white;">안녕하세요, {{ logged_in_username }}</span>
+
                     <a href="{% url 'logout' %}" class="btn">로그아웃</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn">로그인</a>
