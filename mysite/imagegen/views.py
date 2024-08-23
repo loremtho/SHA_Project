@@ -13,7 +13,7 @@ logged_in_user = None
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '0000',
+    'password': '1234',
     'database': 'my_database'
 }
 
@@ -81,15 +81,16 @@ def login_view(request):
 
         try:
             # 쿼리 작성
-            query = "SELECT * FROM users WHERE username = %s AND password = %s"
+            query = "SELECT id FROM users WHERE username = %s AND password = %s"
             values = (username, password)
             cursor.execute(query, values)
-            user = cursor.fetchone()
+            user = cursor.fetchone()[0]
 
             if user:
                 # 로그인 성공 시 전역 변수 수정
                 is_logged_in = True
                 logged_in_user = user
+                print(logged_in_user)
                 return redirect('generate')  # 로그인 후 generate 화면으로 리디렉션
             else:
                 messages.error(request, '사용자 이름이나 비밀번호가 잘못되었습니다.')
