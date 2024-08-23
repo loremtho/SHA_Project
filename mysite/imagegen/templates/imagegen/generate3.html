@@ -21,6 +21,7 @@
             </div>
             <div class="nav-buttons">
                 {% if user.is_authenticated %}
+                    <span class="navbar-text">환영합니다, {{ user.username }}님!</span>
                     <a href="{% url 'logout' %}" class="btn">로그아웃</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn">로그인</a>
@@ -58,8 +59,7 @@
             <button type="submit" class="generate-button">이미지 생성 버튼</button>
         </form>
 
-        <!-- 로딩 스피너 -->
-        <div class="loader" id="loader"></div>
+        <div class="loader" id="loader" style="display: none;"></div>
 
         {% if image_url %}
             <div class="image-container text-center mt-4">
@@ -72,12 +72,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function setStyle(style) {
-            // 버튼 초기화
             document.querySelectorAll('.button-container .style-button').forEach(button => {
                 button.classList.remove('active');
             });
 
-            // 스타일 설정
             let modelId, numSteps, scale, neg_text, pos_text;
 
             if (style === 'realism') {
@@ -103,7 +101,6 @@
                 document.getElementById('pixelButton').classList.add('active');
             }
 
-            // 스타일 설정을 로컬 스토리지에 저장
             localStorage.setItem('model_id', modelId);
             localStorage.setItem('num_inference_steps', numSteps);
             localStorage.setItem('guidance_scale', scale);
@@ -112,7 +109,6 @@
         }
 
         function applyStyleSettings() {
-            // 로컬 스토리지에서 값을 가져와서 폼의 hidden input 필드에 설정
             document.getElementById('model_id').value = localStorage.getItem('model_id') || '';
             document.getElementById('num_inference_steps').value = localStorage.getItem('num_inference_steps') || '';
             document.getElementById('guidance_scale').value = localStorage.getItem('guidance_scale') || '';
@@ -124,7 +120,6 @@
             document.getElementById('loader').style.display = 'block';
         }
 
-        // 페이지 로드 시 스타일 설정 적용
         document.addEventListener('DOMContentLoaded', applyStyleSettings);
     </script>
 </body>
