@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
 from django.contrib import messages
 import mysql.connector
 from .geminiAPI import translate_to_english, transform_to_stable_diffusion_prompt
 from .connectStable import createIMG
 import os
+
+# 전역 변수
+is_logged_in = False
+logged_in_user = None
 
 # MySQL 데이터베이스 설정
 db_config = {
@@ -16,6 +19,8 @@ db_config = {
 
 # 이미지 생성 뷰
 def image_generate_view(request):
+    global is_logged_in, logged_in_user  # 전역 변수 사용 선언
+    
     image_url = None
     if request.method == "POST":
         prompt = request.POST.get("prompt")
@@ -51,12 +56,21 @@ def image_generate_view(request):
         image_filename = sorted(os.listdir(image_folder))[-1]  # 가장 최근 생성된 이미지 선택
         image_url = os.path.join(image_folder, image_filename)
         
-        return render(request, 'imagegen/generate3.html', {'image_url': image_url})
+        return render(request, 'imagegen/generate3.html', {
+            'image_url': image_url,
+            'is_logged_in': is_logged_in,
+            'logged_in_user': logged_in_user
+        })
 
-    return render(request, 'imagegen/generate3.html')
+    return render(request, 'imagegen/generate3.html', {
+        'is_logged_in': is_logged_in,
+        'logged_in_user': logged_in_user
+    })
 
-# 로그인 뷰 dsadasasdas
+# 로그인 뷰
 def login_view(request):
+    global is_logged_in, logged_in_user  # 전역 변수 사용 선언
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -67,16 +81,17 @@ def login_view(request):
 
         try:
             # 쿼리 작성
-            query = "SELECT * FROM users WHERE username = %s AND password = %s"
+            query = "SELECT id FROM users WHERE username = %s AND password = %s"
             values = (username, password)
             cursor.execute(query, values)
-            user = cursor.fetchone()
+            user = cursor.fetchone()[0]
 
             if user:
-                # 로그인 처리
-                request.session['user_id'] = user[0]  # 예: user_id를 세션에 저장
-                request.session['username'] = username
-                return redirect('generate')  # 로그인 후 리디렉션할 URL
+                # 로그인 성공 시 전역 변수 수정
+                is_logged_in = True
+                logged_in_user = user
+                print(logged_in_user)
+                return redirect('generate')  # 로그인 후 generate 화면으로 리디렉션
             else:
                 messages.error(request, '사용자 이름이나 비밀번호가 잘못되었습니다.')
         except mysql.connector.Error as err:
@@ -115,5 +130,8 @@ def signup_view(request):
 
 # 로그아웃 뷰
 def logout_view(request):
-    request.session.flush()  # 세션 초기화
-    return redirect('generate')  # 로그아웃 후 리디렉션할 URL
+    global is_logged_in, logged_in_user  # 전역 변수 사용 선언
+
+    is_logged_in = False
+    logged_in_user = None
+    return redirect('generate')  # 로그아웃 후 generate 화면으로 리디렉션
