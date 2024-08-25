@@ -14,7 +14,7 @@ logged_in_username = None  # 새로 추가된 전역 변수
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '0000',
+    'password': '1234',
     'database': 'my_database'
 }
 
