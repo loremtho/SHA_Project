@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db import connection
 import mysql.connector
 from .geminiAPI import translate_to_english, transform_to_stable_diffusion_prompt
 from .connectStable import createIMG
 import os
+import base64
 
 # 전역 변수
 is_logged_in = False
@@ -14,7 +16,7 @@ logged_in_username = None  # 새로 추가된 전역 변수
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '0000',
+    'password': '1234',
     'database': 'my_database'
 }
 
@@ -50,7 +52,7 @@ def image_generate_view(request):
         print("부정 프롬프트: " + str(neg_prompt))
 
         # 이미지 생성
-        image_url = createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale)
+        image_url = createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale, is_logged_in, logged_in_user)
 
         # 이미지 경로 설정
         image_folder = 'media/picture/'
@@ -140,3 +142,32 @@ def logout_view(request):
     logged_in_user = None
     logged_in_username = None
     return redirect('generate')  # 로그아웃 후 generate 화면으로 리디렉션
+
+def generate_image_view(request):
+    # 가정: 이미지가 바이너리 데이터로 이미 메모리에서 생성되었음
+    # 예: image_data는 생성된 이미지의 바이너리 데이터라고 가정
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+    
+    # 예시로 image_data를 임시로 설정
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT imgname FROM images WHERE user_id = %s", [logged_in_user])  # 예시로 ID가 1인 이미지
+        row = cursor.fetchone()
+    
+    if row:
+        image_path = row[0]  # 이미지 파일의 경로
+    else:
+        image_path = None
+    
+    if image_path and os.path.isfile(image_path):
+        with open(image_path, 'rb') as image_file:
+            image_data = image_file.read()
+            encoded_image = base64.b64encode(image_data).decode('utf-8')
+            image_src = f"data:image/jpeg;base64,{encoded_image}"
+    else:
+        image_src = None
+
+    # 템플릿으로 데이터 전달
+    return render(request, 'your_template.html', {
+        'image_src': image_src,
+    })

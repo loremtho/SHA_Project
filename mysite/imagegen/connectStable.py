@@ -9,7 +9,7 @@ from datetime import datetime
 import os
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "true"
 
-def createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale):
+def createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale, is_logged_in, logged_in_user):
     # 모델 로드
     from huggingface_hub import login
     huggingface_token = "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"
