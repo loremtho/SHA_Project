@@ -152,9 +152,10 @@ def generate_image_view(request):
     # 예시로 image_data를 임시로 설정
     with connection.cursor() as cursor:
         cursor.execute("SELECT imgname FROM images WHERE user_id = %s", [logged_in_user])  # 예시로 ID가 1인 이미지
-        row = cursor.fetchone()
+        row = cursor.fetchall()
     
     if row:
+        
         image_path = row[0]  # 이미지 파일의 경로
     else:
         image_path = None

@@ -38,7 +38,7 @@
             <button id="pixelButton" type="button" class="style-button pixel" onclick="setStyle('pixel')">도트풍</button>
         </div>
 
-        <form method="POST" class="prompt-form">
+        <form method="POST" class="prompt-form" onsubmit="showLoader()">
             {% csrf_token %}
             <input type="hidden" id="model_id" name="model_id">
             <input type="hidden" id="num_inference_steps" name="num_inference_steps">
@@ -60,61 +60,28 @@
         <!-- 로딩 스피너 -->
         <div class="loader" id="loader" style="display: none;"></div>
 
-        <!-- 생성된 이미지 섹션 -->
         {% if image_url %}
-            <div class="image-container text-center mt-4">
-                <h2>생성된 이미지:</h2>
-                <img src="{{ image_url }}" alt="Generated Image" class="img-fluid">
-            </div>
+        <div class="result-section mt-5">
+            <h2>생성된 이미지:</h2>
+            <img src="{{ image_url }}" alt="Generated Image" class="img-fluid" style="max-width: 100%;">
+        </div>
         {% endif %}
 
-        <!-- 이미지 갤러리 섹션 -->
-        <div class="container mt-4">
-            <div class="row" id="image-grid">
-                {% if image_src %}
-                <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                    <img src="{{ image_src }}" alt="Generated Image" class="img-fluid rounded">
-                </div>
-                {% else %}
-                <p>이미지가 존재하지 않습니다.</p>
-                {% endif %}
+        {% if is_logged_in %}
+        <div class="history-section mt-5">
+            <h2>이전 이미지 히스토리:</h2>
+            <div class="image-history">
+                {% for img in image_history %}
+                <img src="/media/picture/{{ img.0 }}" alt="History Image" class="img-thumbnail" style="max-width: 150px;">
+                {% endfor %}
             </div>
         </div>
+        {% endif %}
     </div>
 
+    <script src="{% static 'js/styles2.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 페이지 로드 시 이미지 갤러리 업데이트
-        document.addEventListener('DOMContentLoaded', function() {
-            updateImageGrid();
-        });
-
-        function updateImageGrid() {
-            fetch("{% url 'generate_image' %}")
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('image-grid').innerHTML = data;
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // 폼 제출 시 AJAX 호출
-        document.querySelector('.prompt-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // 폼의 기본 제출을 방지
-            showLoader(); // 로딩 스피너 표시
-
-            fetch("{% url 'generate_image' %}", { method: 'POST', body: new FormData(this) })
-                .then(response => response.text())
-                .then(data => {
-                    updateImageGrid(); // 이미지 갤러리 업데이트
-                    hideLoader(); // 로딩 스피너 숨기기
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    hideLoader(); // 에러 발생 시 로딩 스피너 숨기기
-                });
-        });
-
         function showLoader() {
             document.getElementById('loader').style.display = 'block';
         }
@@ -175,5 +142,6 @@
         // 페이지 로드 시 스타일 설정 적용
         document.addEventListener('DOMContentLoaded', applyStyleSettings);
     </script>
+
 </body>
 </html>
