@@ -38,14 +38,14 @@
             <button id="pixelButton" type="button" class="style-button pixel" onclick="setStyle('pixel')">도트풍</button>
         </div>
 
-        <form method="POST" class="prompt-form" onsubmit="showLoader()">
+        <form method="POST" action="{% url 'generate' %}" class="prompt-form" onsubmit="showLoader()">
             {% csrf_token %}
             <input type="hidden" id="model_id" name="model_id">
             <input type="hidden" id="num_inference_steps" name="num_inference_steps">
             <input type="hidden" id="guidance_scale" name="guidance_scale">
             <input type="hidden" id="neg_text" name="neg_text">
             <input type="hidden" id="pos_text" name="pos_text">
-
+        
             <div class="mb-3">
                 <label for="prompt" class="form-label">프롬프트를 입력하세요 (Korean):</label>
                 <input type="text" id="prompt" name="prompt" class="form-control" required placeholder="여기에 입력하세요...">
@@ -56,6 +56,7 @@
             </div>
             <button type="submit" class="generate-button">이미지 생성 버튼</button>
         </form>
+        
 
         <!-- 로딩 스피너 -->
         <div class="loader" id="loader" style="display: none;"></div>
@@ -67,16 +68,17 @@
         </div>
         {% endif %}
 
-        {% if is_logged_in %}
+        {% if image_history %}
         <div class="history-section mt-5">
             <h2>이전 이미지 히스토리:</h2>
             <div class="image-history">
-                {% for img in image_history %}
-                <img src="/media/picture/{{ img.0 }}" alt="History Image" class="img-thumbnail" style="max-width: 150px;">
+                {% for img_src in image_history %}
+                <img src="{{ img_src }}" alt="History Image" class="img-thumbnail" style="max-width: 150px;">
                 {% endfor %}
             </div>
         </div>
-        {% endif %}
+    {% endif %}
+
     </div>
 
     <script src="{% static 'js/styles2.js' %}"></script>
