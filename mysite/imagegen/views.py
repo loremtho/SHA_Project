@@ -163,11 +163,11 @@ def generate_image_view(request):
         with open(image_path, 'rb') as image_file:
             image_data = image_file.read()
             encoded_image = base64.b64encode(image_data).decode('utf-8')
-            image_src = f"data:image/jpeg;base64,{encoded_image}"
+            image_src = f"data:image/png;base64,{encoded_image}"
     else:
         image_src = None
 
     # 템플릿으로 데이터 전달
-    return render(request, 'your_template.html', {
+    return render(request, 'imagegen/generate3.html', {
         'image_src': image_src,
     })

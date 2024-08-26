@@ -20,11 +20,10 @@
             <div class="nav-buttons">
                 {% if is_logged_in %}
                 <span class="navbar-text" style="color: white;">안녕하세요, {{ logged_in_username }}</span>
-
-                    <a href="{% url 'logout' %}" class="btn">로그아웃</a>
+                <a href="{% url 'logout' %}" class="btn">로그아웃</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn">로그인</a>
-                    <a href="{% url 'signup' %}" class="btn">회원가입</a>
+                <a href="{% url 'login' %}" class="btn">로그인</a>
+                <a href="{% url 'signup' %}" class="btn">회원가입</a>
                 {% endif %}
             </div>
         </div>
@@ -39,7 +38,7 @@
             <button id="pixelButton" type="button" class="style-button pixel" onclick="setStyle('pixel')">도트풍</button>
         </div>
 
-        <form method="POST" class="prompt-form" onsubmit="showLoader()">
+        <form method="POST" class="prompt-form">
             {% csrf_token %}
             <input type="hidden" id="model_id" name="model_id">
             <input type="hidden" id="num_inference_steps" name="num_inference_steps">
@@ -59,33 +58,122 @@
         </form>
 
         <!-- 로딩 스피너 -->
-        <div class="loader" id="loader"></div>
+        <div class="loader" id="loader" style="display: none;"></div>
 
+        <!-- 생성된 이미지 섹션 -->
         {% if image_url %}
             <div class="image-container text-center mt-4">
                 <h2>생성된 이미지:</h2>
                 <img src="{{ image_url }}" alt="Generated Image" class="img-fluid">
             </div>
         {% endif %}
-    </div>
 
-    <div class="container mt-4">
-        <div class="row" id="image-grid">
-            {% if image_src %}
+        <!-- 이미지 갤러리 섹션 -->
+        <div class="container mt-4">
+            <div class="row" id="image-grid">
+                {% if image_src %}
                 <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
                     <img src="{{ image_src }}" alt="Generated Image" class="img-fluid rounded">
                 </div>
-            {% else %}
+                {% else %}
                 <p>이미지가 존재하지 않습니다.</p>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // 페이지 로드 시 이미지 갤러리 업데이트
+        document.addEventListener('DOMContentLoaded', function() {
+            updateImageGrid();
+        });
+
+        function updateImageGrid() {
+            fetch("{% url 'generate_image' %}")
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('image-grid').innerHTML = data;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // 폼 제출 시 AJAX 호출
+        document.querySelector('.prompt-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼의 기본 제출을 방지
+            showLoader(); // 로딩 스피너 표시
+
+            fetch("{% url 'generate_image' %}", { method: 'POST', body: new FormData(this) })
+                .then(response => response.text())
+                .then(data => {
+                    updateImageGrid(); // 이미지 갤러리 업데이트
+                    hideLoader(); // 로딩 스피너 숨기기
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    hideLoader(); // 에러 발생 시 로딩 스피너 숨기기
+                });
+        });
+
         function showLoader() {
             document.getElementById('loader').style.display = 'block';
         }
+
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        function setStyle(style) {
+            // 버튼 초기화
+            document.querySelectorAll('.button-container .style-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // 스타일 설정
+            let modelId, numSteps, scale, neg_text, pos_text;
+
+            if (style === 'realism') {
+                modelId = "SG161222/Realistic_Vision_V6.0_B1_noVAE";
+                numSteps = 20;
+                scale = 7;
+                neg_text = "deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime, text, cropped, out of frame, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck";
+                pos_text = "masterpiece, best quality, photo-realistic, realistic, highly detailed, natural lighting, cinematic";
+                document.getElementById('realismButton').classList.add('active');
+            } else if (style === 'anime') {
+                modelId = "eienmojiki/Anything-XL";
+                numSteps = 20;
+                scale = 7;
+                neg_text = "(worst quality, low quality:1.4), lowres, bad anatomy, bad hands, mutation, text, error,negative_hand Negative Embedding,verybadimagenegative_v1.3, missing fingers, extra digit, fewer digits, cropped, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (ugly:2.8)";
+                pos_text = "masterpiece, best quality, newest, safe";
+                document.getElementById('animeButton').classList.add('active');
+            } else if (style === 'pixel') {
+                modelId = "stabilityai/stable-diffusion-xl-base-1.0";
+                numSteps = 8;
+                scale = 1.5;
+                neg_text = "3d render, realistic";
+                pos_text = "pixel art, masterpiece, best quality";
+                document.getElementById('pixelButton').classList.add('active');
+            }
+
+            // 스타일 설정을 로컬 스토리지에 저장
+            localStorage.setItem('model_id', modelId);
+            localStorage.setItem('num_inference_steps', numSteps);
+            localStorage.setItem('guidance_scale', scale);
+            localStorage.setItem('neg_text', neg_text);
+            localStorage.setItem('pos_text', pos_text);
+        }
+
+        function applyStyleSettings() {
+            // 로컬 스토리지에서 값을 가져와서 폼의 hidden input 필드에 설정
+            document.getElementById('model_id').value = localStorage.getItem('model_id') || '';
+            document.getElementById('num_inference_steps').value = localStorage.getItem('num_inference_steps') || '';
+            document.getElementById('guidance_scale').value = localStorage.getItem('guidance_scale') || '';
+            document.getElementById('neg_text').value = localStorage.getItem('neg_text') || '';
+            document.getElementById('pos_text').value = localStorage.getItem('pos_text') || '';
+        }
+
+        // 페이지 로드 시 스타일 설정 적용
+        document.addEventListener('DOMContentLoaded', applyStyleSettings);
     </script>
 </body>
 </html>
