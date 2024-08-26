@@ -14,7 +14,7 @@ logged_in_username = None  # 새로 추가된 전역 변수
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': '1234',
+    'password': '0000',
     'database': 'my_database'
 }
 
@@ -44,7 +44,8 @@ def image_generate_view(request):
             negative_english_text = str(neg_text)
 
         # Stable Diffusion 프롬프트로 변환
-        pos_prompt, neg_prompt = transform_to_stable_diffusion_prompt(english_text, negative_english_text)
+        pos_prompt, neg_prompt= transform_to_stable_diffusion_prompt(english_text, negative_english_text)
+
         
         print("긍정 프롬프트: " + str(pos_prompt))
         print("부정 프롬프트: " + str(neg_prompt))
