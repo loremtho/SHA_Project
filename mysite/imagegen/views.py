@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import connection
+import os
+import base64
 import mysql.connector
 from .geminiAPI import translate_to_english, transform_to_stable_diffusion_prompt
 from .connectStable import createIMG
-import os
-import base64
+from django.conf import settings
 
 # 전역 변수
 is_logged_in = False
@@ -24,7 +24,6 @@ db_config = {
 def image_generate_view(request):
     global is_logged_in, logged_in_user, logged_in_username
     
-    image_url = None
     if request.method == "POST":
         prompt = request.POST.get("prompt")
         negative_prompt = request.POST.get("negative_prompt", "")
@@ -52,19 +51,19 @@ def image_generate_view(request):
         print("부정 프롬프트: " + str(neg_prompt))
 
         # 이미지 생성
-        image_url = createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale, is_logged_in, logged_in_user)
+        createIMG(pos_prompt, neg_prompt, model_id, num_inference_steps, guidance_scale, is_logged_in, logged_in_user)
 
         # 이미지 경로 설정
         image_folder = 'media/picture/'
         image_filename = sorted(os.listdir(image_folder))[-1]  # 가장 최근 생성된 이미지 선택
         image_url = os.path.join(image_folder, image_filename)
-        
-        return render(request, 'imagegen/generate3.html', {
-            'image_url': image_url,
-            'is_logged_in': is_logged_in,
-            'logged_in_user': logged_in_user,
-            'logged_in_username': logged_in_username
-        })
+
+        # 세션에 이미지 URL 저장
+        request.session['image_url'] = image_url
+
+        print(image_url)
+        # 이미지 생성 후 리디렉션
+        return redirect('generate_image')
 
     return render(request, 'imagegen/generate3.html', {
         'is_logged_in': is_logged_in,
@@ -143,10 +142,16 @@ def logout_view(request):
     logged_in_username = None
     return redirect('generate')  # 로그아웃 후 generate 화면으로 리디렉션
 
+# 히스토리 뷰
 def generate_image_view(request):
-    print("호출")
     if not is_logged_in:
-        return 0
+        return 0  # 로그인하지 않은 경우 로그인 페이지로 리디렉션
+
+    # 세션에서 이미지 URL 가져오기
+    image_url = request.session.get('image_url')
+    # 세션에서 URL을 제거
+    if 'image_url' in request.session:
+        del request.session['image_url']
 
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
@@ -154,8 +159,6 @@ def generate_image_view(request):
     # 사용자 이미지 히스토리 쿼리
     cursor.execute("SELECT imgname FROM images WHERE user_id = %s", [logged_in_user])
     rows = cursor.fetchall()
-
-    image_history = rows[:10]
 
     image_history = []
     for row in rows:
@@ -167,12 +170,18 @@ def generate_image_view(request):
                 encoded_image = base64.b64encode(image_data).decode('utf-8')
                 image_src = f"data:image/png;base64,{encoded_image}"
                 image_history.append(image_src)
-    
+
     cursor.close()
     conn.close()
+    
+   # 이미지 URL을 MEDIA_URL을 포함한 경로로 설정
+    if image_url:
+        image_url = os.path.join(settings.MEDIA_URL, 'picture', os.path.basename(image_url))
 
+    print(image_url)
     # 템플릿으로 데이터 전달
     return render(request, 'imagegen/generate3.html', {
+        'image_url': image_url,
         'image_history': image_history,
         'is_logged_in': is_logged_in,
         'logged_in_user': logged_in_user,

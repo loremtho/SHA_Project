@@ -57,7 +57,6 @@
             <button type="submit" class="generate-button">이미지 생성 버튼</button>
         </form>
         
-
         <!-- 로딩 스피너 -->
         <div class="loader" id="loader" style="display: none;"></div>
 
@@ -68,9 +67,9 @@
                 <img src="{{ image_url }}" alt="Generated Image" class="img-fluid" style="max-width: 100%;">
             </div>
         </div>
-    {% endif %}
+        {% endif %}
     
-    {% if image_history %}
+        {% if image_history %}
         <div class="history-section mt-5">
             <h2>이전 이미지 히스토리</h2>
             <div class="image-history d-flex flex-wrap">
@@ -79,7 +78,7 @@
                 {% endfor %}
             </div>
         </div>
-    {% endif %}
+        {% endif %}
     </div>
 
     <script src="{% static 'js/styles2.js' %}"></script>
