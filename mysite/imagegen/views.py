@@ -145,7 +145,20 @@ def logout_view(request):
 # 히스토리 뷰
 def generate_image_view(request):
     if not is_logged_in:
-        return 0  # 로그인하지 않은 경우 로그인 페이지로 리디렉션
+        
+        # 세션에서 이미지 URL 가져오기
+        image_url = request.session.get('image_url')
+        # 세션에서 URL을 제거
+        if 'image_url' in request.session:
+            del request.session['image_url']
+            
+        if image_url:
+            image_url = os.path.join(settings.MEDIA_URL, 'picture', os.path.basename(image_url))
+        
+        return render(request, 'imagegen/generate3.html', {
+            'image_url': image_url,
+            'is_logged_in': is_logged_in,
+        })
 
     # 세션에서 이미지 URL 가져오기
     image_url = request.session.get('image_url')
