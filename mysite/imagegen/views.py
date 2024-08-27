@@ -146,7 +146,7 @@ def logout_view(request):
 def generate_image_view(request):
     print("호출")
     if not is_logged_in:
-        return redirect('login')  # 로그인하지 않은 경우 로그인 페이지로 리디렉션
+        return 0
 
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
@@ -154,6 +154,8 @@ def generate_image_view(request):
     # 사용자 이미지 히스토리 쿼리
     cursor.execute("SELECT imgname FROM images WHERE user_id = %s", [logged_in_user])
     rows = cursor.fetchall()
+
+    image_history = rows[:10]
 
     image_history = []
     for row in rows:

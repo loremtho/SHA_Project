@@ -62,23 +62,24 @@
         <div class="loader" id="loader" style="display: none;"></div>
 
         {% if image_url %}
-        <div class="result-section mt-5">
-            <h2>생성된 이미지:</h2>
-            <img src="{{ image_url }}" alt="Generated Image" class="img-fluid" style="max-width: 100%;">
+        <div class="result-section mt-5 d-flex justify-content-center">
+            <div>
+                <h2 class="text-center">생성된 이미지</h2>
+                <img src="{{ image_url }}" alt="Generated Image" class="img-fluid" style="max-width: 100%;">
+            </div>
         </div>
-        {% endif %}
-
-        {% if image_history %}
+    {% endif %}
+    
+    {% if image_history %}
         <div class="history-section mt-5">
-            <h2>이전 이미지 히스토리:</h2>
-            <div class="image-history">
+            <h2>이전 이미지 히스토리</h2>
+            <div class="image-history d-flex flex-wrap">
                 {% for img_src in image_history %}
-                <img src="{{ img_src }}" alt="History Image" class="img-thumbnail" style="max-width: 150px;">
+                <img src="{{ img_src }}" alt="History Image" class="img-thumbnail m-1" style="max-width: 150px;">
                 {% endfor %}
             </div>
         </div>
     {% endif %}
-
     </div>
 
     <script src="{% static 'js/styles2.js' %}"></script>
